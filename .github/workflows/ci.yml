@@ -12,10 +12,11 @@ jobs:
         image: redis
         ports:
           - 6379:6379
+    continue-on-error: ${{ matrix.ruby == 'jruby-9.2.9.0' || matrix.ruby == 'head' }}
     strategy:
       fail-fast: false
       matrix:
-        ruby-version:
+        ruby:
           - 2.3
           - 2.4
           - 2.5
@@ -26,12 +27,12 @@ jobs:
           - jruby-9.1.17.0
           - jruby-9.2.9.0
           - jruby-9.2.19.0
-        resque-version:
+        resque:
           - "master"
           - "~> 2.0.0"
           - "~> 1.27"
     env:
-      RESQUE: "${{ matrix.resque-version }}"
+      RESQUE: "${{ matrix.resque }}"
       COVERAGE: 1
       JRUBY_OPTS: ""
       RUBYOPT: "-W0"
@@ -40,7 +41,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "${{ matrix.ruby-version }}"
+          ruby-version: "${{ matrix.ruby }}"
           bundler-cache: true
       - run: bundle exec rake
       - run: bin/bundle_console_test.sh
